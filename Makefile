@@ -1930,6 +1930,49 @@ clean_nfsserver:
 	$(RM) -rf $(BITS_DIR)/nfsserver
 	(cd build/nfsserver && gmake clean)
 
+#---- VAPI
+
+_vapi_stamp=$(SDC_VAPI_BRANCH)-$(TIMESTAMP)-g$(SDC_VAPI_SHA)
+VAPI_BITS=$(BITS_DIR)/vapi/vapi-pkg-$(_vapi_stamp).tar.bz2
+VAPI_IMAGE_BIT=$(BITS_DIR)/vapi/vapi-zfs-$(_vapi_stamp).zfs.gz
+VAPI_MANIFEST_BIT=$(BITS_DIR)/vapi/vapi-zfs-$(_vapi_stamp).imgmanifest
+
+.PHONY: vapi
+vapi: $(VAPI_BITS) vapi_image
+
+# PATH for vapi build: Ensure /opt/local/bin is first to put gcc 4.5 (from
+# pkgsrc) before other GCCs.
+$(VAPI_BITS): build/sdc-vapi
+	@echo "# Build vapi: branch $(SDC_VAPI_BRANCH), sha $(SDC_VAPI_SHA), time `date -u +%Y%m%dT%H%M%SZ`"
+	mkdir -p $(BITS_DIR)
+	(cd build/sdc-vapi && NPM_CONFIG_CACHE=$(MG_CACHE_DIR)/npm TIMESTAMP=$(TIMESTAMP) BITS_DIR=$(BITS_DIR) gmake release publish)
+	@echo "# Created vapi bits (time `date -u +%Y%m%dT%H%M%SZ`):"
+	@ls -l $(VAPI_BITS)
+	@echo ""
+
+.PHONY: vapi_image
+vapi_image: $(VAPI_IMAGE_BIT)
+
+$(VAPI_IMAGE_BIT): $(VAPI_BITS)
+	@echo "# Build vapi_image: branch $(SDC_VAPI_BRANCH), sha $(SDC_VAPI_SHA), time `date -u +%Y%m%dT%H%M%SZ`"
+	./tools/prep_dataset_in_jpc.sh -i "$(VAPI_IMAGE_UUID)" -t $(VAPI_BITS) \
+		-o "$(VAPI_IMAGE_BIT)" -p $(VAPI_PKGSRC) -O "$(MG_OUT_PATH)" \
+		-t $(VAPI_EXTRA_TARBALLS) -n $(VAPI_IMAGE_NAME) \
+		-v $(_vapi_stamp) -d $(VAPI_IMAGE_DESCRIPTION)
+	@echo "# Created vapi image (time `date -u +%Y%m%dT%H%M%SZ`):"
+	@ls -l $$(dirname $(VAPI_IMAGE_BIT))
+	@echo ""
+
+vapi_publish_image: $(VAPI_IMAGE_BIT)
+	@echo "# Publish vapi image to SDC Updates repo."
+	$(UPDATES_IMGADM) import -ddd -m $(VAPI_MANIFEST_BIT) -f $(VAPI_IMAGE_BIT)
+
+# Warning: if vapi's submodule deps change, this 'clean_vapi' is insufficient. It would
+# then need to call 'gmake dist-clean'.
+clean_vapi:
+	$(RM) -rf $(BITS_DIR)/vapi
+	(cd build/sdc-vapi && gmake clean)
+
 
 #---- Propeller
 
