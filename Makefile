@@ -1930,27 +1930,27 @@ clean_nfsserver:
 	$(RM) -rf $(BITS_DIR)/nfsserver
 	(cd build/nfsserver && gmake clean)
 
-#---- VAPI
+#---- VOLAPI
 
-_vapi_stamp=$(SDC_VAPI_BRANCH)-$(TIMESTAMP)-g$(SDC_VAPI_SHA)
-VAPI_BITS=$(BITS_DIR)/vapi/vapi-pkg-$(_vapi_stamp).tar.bz2
-VAPI_IMAGE_BIT=$(BITS_DIR)/vapi/vapi-zfs-$(_vapi_stamp).zfs.gz
-VAPI_MANIFEST_BIT=$(BITS_DIR)/vapi/vapi-zfs-$(_vapi_stamp).imgmanifest
+_volapi_stamp=$(SDC_VOLAPI_BRANCH)-$(TIMESTAMP)-g$(SDC_VOLAPI_SHA)
+VOLAPI_BITS=$(BITS_DIR)/volapi/volapi-pkg-$(_volapi_stamp).tar.bz2
+VOLAPI_IMAGE_BIT=$(BITS_DIR)/volapi/volapi-zfs-$(_volapi_stamp).zfs.gz
+VOLAPI_MANIFEST_BIT=$(BITS_DIR)/volapi/volapi-zfs-$(_volapi_stamp).imgmanifest
 
-.PHONY: vapi
-vapi: $(VAPI_BITS) vapi_image
+.PHONY: volapi
+volapi: $(VOLAPI_BITS) volapi_image
 
-# PATH for vapi build: Ensure /opt/local/bin is first to put gcc 4.5 (from
+# PATH for volapi build: Ensure /opt/local/bin is first to put gcc 4.5 (from
 # pkgsrc) before other GCCs.
-$(VAPI_BITS): build/sdc-vapi
-	@echo "# Build vapi: branch $(SDC_VAPI_BRANCH), sha $(SDC_VAPI_SHA), time `date -u +%Y%m%dT%H%M%SZ`"
+$(VOLAPI_BITS): build/sdc-volapi
+	@echo "# Build volapi: branch $(SDC_VOLAPI_BRANCH), sha $(SDC_VOLAPI_SHA), time `date -u +%Y%m%dT%H%M%SZ`"
 	mkdir -p $(BITS_DIR)
-	(cd build/sdc-vapi && NPM_CONFIG_CACHE=$(MG_CACHE_DIR)/npm TIMESTAMP=$(TIMESTAMP) BITS_DIR=$(BITS_DIR) gmake release publish)
-	@echo "# Created vapi bits (time `date -u +%Y%m%dT%H%M%SZ`):"
-	@ls -l $(VAPI_BITS)
+	(cd build/sdc-volapi && NPM_CONFIG_CACHE=$(MG_CACHE_DIR)/npm TIMESTAMP=$(TIMESTAMP) BITS_DIR=$(BITS_DIR) gmake release publish)
+	@echo "# Created volapi bits (time `date -u +%Y%m%dT%H%M%SZ`):"
+	@ls -l $(VOLAPI_BITS)
 	@echo ""
 
-.PHONY: vapi_image
+.PHONY: volapi_image
 volapi_image: $(VOLAPI_IMAGE_BIT)
 
 $(VOLAPI_IMAGE_BIT): $(VOLAPI_BITS)
@@ -1963,7 +1963,7 @@ $(VOLAPI_IMAGE_BIT): $(VOLAPI_BITS)
 	@ls -l $$(dirname $(VOLAPI_IMAGE_BIT))
 	@echo ""
 
-vapi_publish_image: $(VOLAPI_IMAGE_BIT)
+volapi_publish_image: $(VOLAPI_IMAGE_BIT)
 	@echo "# Publish volapi image to SDC Updates repo."
 	$(UPDATES_IMGADM) import -ddd -m $(VOLAPI_MANIFEST_BIT) -f $(VOLAPI_IMAGE_BIT)
 
