@@ -432,14 +432,14 @@ cat <<EOF
       {"tarball": "config-agent/config-agent-*.tar.bz2", "sysroot": "/opt/smartdc"}
     ]
   },
-  "vapi": {
+  "volapi": {
     "appliance": "true",
-    "image_name": "vapi",
+    "image_name": "volapi",
     "image_description": "SDC Volumes API",
     "image_version": "1.0.0",
     "image_uuid": "de411e86-548d-11e4-a4b7-3bb60478632a",
     "repos": [
-      {"url": "git@github.com:misterdjules/sdc-vapi.git"}
+      {"url": "git@github.com:misterdjules/sdc-volapi.git"}
     ],
     "public": true,
     "deps": [
