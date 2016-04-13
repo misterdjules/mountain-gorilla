@@ -1951,27 +1951,27 @@ $(VAPI_BITS): build/sdc-vapi
 	@echo ""
 
 .PHONY: vapi_image
-vapi_image: $(VAPI_IMAGE_BIT)
+volapi_image: $(VOLAPI_IMAGE_BIT)
 
-$(VAPI_IMAGE_BIT): $(VAPI_BITS)
-	@echo "# Build vapi_image: branch $(SDC_VAPI_BRANCH), sha $(SDC_VAPI_SHA), time `date -u +%Y%m%dT%H%M%SZ`"
-	./tools/prep_dataset_in_jpc.sh -i "$(VAPI_IMAGE_UUID)" -t $(VAPI_BITS) \
-		-o "$(VAPI_IMAGE_BIT)" -p $(VAPI_PKGSRC) -O "$(MG_OUT_PATH)" \
-		-t $(VAPI_EXTRA_TARBALLS) -n $(VAPI_IMAGE_NAME) \
-		-v $(_vapi_stamp) -d $(VAPI_IMAGE_DESCRIPTION)
-	@echo "# Created vapi image (time `date -u +%Y%m%dT%H%M%SZ`):"
-	@ls -l $$(dirname $(VAPI_IMAGE_BIT))
+$(VOLAPI_IMAGE_BIT): $(VOLAPI_BITS)
+	@echo "# Build volapi_image: branch $(SDC_VOLAPI_BRANCH), sha $(SDC_VOLAPI_SHA), time `date -u +%Y%m%dT%H%M%SZ`"
+	./tools/prep_dataset_in_jpc.sh -i "$(VOLAPI_IMAGE_UUID)" -t $(VOLAPI_BITS) \
+		-o "$(VOLAPI_IMAGE_BIT)" -p $(VOLAPI_PKGSRC) -O "$(MG_OUT_PATH)" \
+		-t $(VOLAPI_EXTRA_TARBALLS) -n $(VOLAPI_IMAGE_NAME) \
+		-v $(_volapi_stamp) -d $(VOLAPI_IMAGE_DESCRIPTION)
+	@echo "# Created volapi image (time `date -u +%Y%m%dT%H%M%SZ`):"
+	@ls -l $$(dirname $(VOLAPI_IMAGE_BIT))
 	@echo ""
 
-vapi_publish_image: $(VAPI_IMAGE_BIT)
-	@echo "# Publish vapi image to SDC Updates repo."
-	$(UPDATES_IMGADM) import -ddd -m $(VAPI_MANIFEST_BIT) -f $(VAPI_IMAGE_BIT)
+vapi_publish_image: $(VOLAPI_IMAGE_BIT)
+	@echo "# Publish volapi image to SDC Updates repo."
+	$(UPDATES_IMGADM) import -ddd -m $(VOLAPI_MANIFEST_BIT) -f $(VOLAPI_IMAGE_BIT)
 
-# Warning: if vapi's submodule deps change, this 'clean_vapi' is insufficient. It would
+# Warning: if volapi's submodule deps change, this 'clean_volapi' is insufficient. It would
 # then need to call 'gmake dist-clean'.
-clean_vapi:
-	$(RM) -rf $(BITS_DIR)/vapi
-	(cd build/sdc-vapi && gmake clean)
+clean_volapi:
+	$(RM) -rf $(BITS_DIR)/volapi
+	(cd build/sdc-volapi && gmake clean)
 
 
 #---- Propeller
